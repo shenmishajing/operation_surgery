@@ -1,0 +1,49 @@
+data:
+    class_path: datasets.mmlab_dataset_adapter.MMLabDataSetAdapter
+    init_args:
+        visualizer_cfg:
+            class_path: mmpretrain.visualization.UniversalVisualizer
+        evaluator_cfg:
+            train:
+                class_path: mmengine.evaluator.Evaluator
+                init_args:
+                    metrics:
+                        type: mmpretrain.Accuracy
+                        topk: [1]
+        dataset_cfg:
+            train:
+                class_path: mmpretrain.datasets.cifar.CIFAR10
+                init_args:
+                    data_prefix: data/cifar
+                    test_mode: false
+                    pipeline:
+                        - type: RandomCrop
+                          crop_size: 32
+                          padding: 4
+                        - type: RandomFlip
+                          prob: 0.5
+                          direction: horizontal
+                        - type: PackInputs
+            val:
+                init_args:
+                    test_mode: true
+                    pipeline:
+                        - type: PackInputs
+        dataloader_cfg:
+            train:
+                batch_size: 128
+                num_workers: 8
+                prefetch_factor: 2
+                pin_memory: true
+                persistent_workers: true
+            val:
+                batch_size: 128
+
+trainer:
+    callbacks:
+        change_item:
+            - - 0
+              - init_args:
+                    monitor: val/accuracy/top1
+                    filename: "epoch:{epoch}-val_acc:{val/accuracy/top1:.4g}"
+                    mode: max

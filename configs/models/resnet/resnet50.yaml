@@ -1,0 +1,36 @@
+model:
+    class_path: models.mmlab_model_adapter.MMLabModelAdapter
+    init_args:
+        model:
+            class_path: mmpretrain.models.classifiers.ImageClassifier
+            init_args:
+                data_preprocessor:
+                    mean:
+                        - 123.675
+                        - 116.28
+                        - 103.53
+                    num_classes: 1000
+                    std:
+                        - 58.395
+                        - 57.12
+                        - 57.375
+                    to_rgb: true
+                backbone:
+                    depth: 50
+                    num_stages: 4
+                    out_indices: !!python/tuple
+                        - 3
+                    style: pytorch
+                    type: ResNet
+                head:
+                    in_channels: 2048
+                    loss:
+                        loss_weight: 1.0
+                        type: CrossEntropyLoss
+                    topk: !!python/tuple
+                        - 1
+                        - 5
+                    num_classes: 1000
+                    type: LinearClsHead
+                neck:
+                    type: GlobalAveragePooling

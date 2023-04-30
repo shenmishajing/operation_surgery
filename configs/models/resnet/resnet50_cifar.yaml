@@ -1,0 +1,24 @@
+__base__: resnet50.yaml
+
+model:
+    init_args:
+        model:
+            init_args:
+                data_preprocessor:
+                    __delete__: true
+                    mean:
+                        - 125.307
+                        - 122.961
+                        - 113.8575
+                    std:
+                        - 51.5865
+                        - 50.847
+                        - 51.255
+                    num_classes: 10
+                    to_rgb: false
+                backbone:
+                    type: ResNet_CIFAR
+                head:
+                    num_classes: 10
+                    topk: !!python/tuple
+                        - 1

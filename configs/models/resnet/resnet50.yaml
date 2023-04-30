@@ -1,5 +1,5 @@
 model:
-    class_path: models.mmlab_model_adapter.MMLabModelAdapter
+    class_path: mmlab_lightning.models.MMLabModelAdapter
     init_args:
         model:
             class_path: mmpretrain.models.classifiers.ImageClassifier

@@ -1,0 +1,61 @@
+data:
+    class_path: mmlab_lightning.datasets.MMLabDataSetAdapter
+    init_args:
+        visualizer_cfg:
+            class_path: mmpretrain.visualization.UniversalVisualizer
+        evaluator_cfg:
+            train:
+                class_path: mmengine.evaluator.Evaluator
+                init_args:
+                    metrics:
+                        - type: mmpretrain.Accuracy
+                          topk: [1]
+                        - type: mmpretrain.SingleLabelMetric
+        dataset_cfg:
+            split_info:
+                split_format_to: [ann_file]
+            train:
+                class_path: mmpretrain.datasets.CustomDataset
+                init_args:
+                    data_root: data/operation_surgery
+                    ann_file: annotations/${split}.txt
+                    data_prefix: images
+                    classes: data/operation_surgery/annotations/synsets.txt
+                    test_mode: false
+                    pipeline:
+                        - type: LoadImageFromFile
+                        - type: RandomResizedCrop
+                          scale: 224
+                        - type: RandomFlip
+                          prob: 0.5
+                          direction: horizontal
+                        - type: PackInputs
+            val:
+                init_args:
+                    test_mode: true
+                    pipeline:
+                        - type: LoadImageFromFile
+                        - type: ResizeEdge
+                          scale: 256
+                          edge: short
+                        - type: CenterCrop
+                          crop_size: 224
+                        - type: PackInputs
+        dataloader_cfg:
+            train:
+                batch_size: 16
+                num_workers: 16
+                prefetch_factor: 2
+                pin_memory: true
+                persistent_workers: true
+            val:
+                batch_size: 1
+
+trainer:
+    callbacks:
+        change_item:
+            - - 0
+              - init_args:
+                    monitor: val/accuracy/top1
+                    filename: "epoch:{epoch}-val_acc:{val/accuracy/top1:.4g}"
+                    mode: max

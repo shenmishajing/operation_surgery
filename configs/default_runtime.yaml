@@ -2,7 +2,7 @@ trainer:
     logger:
         class_path: lightning_template.utils.loggers.wandb.WandbNamedLogger
         init_args:
-            project: mmpretrain_lightning
+            project: operation_surgery
             save_dir: work_dirs
             offline: false
     callbacks:
